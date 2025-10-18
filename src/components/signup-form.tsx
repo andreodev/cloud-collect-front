@@ -16,10 +16,8 @@ import { useRouter } from "next/navigation"
 import { formatCPF } from "@/app/utils/formart_cpf"
 import { useConfetti } from "@/hooks/useConfetti"
 import { useFormToast } from "@/hooks/useFormToast"
-import { useSignUp } from "@/app/login/hooks/useCreate"
+import { useSignUp } from "@/app/signup/hooks/useCreate"
 import { schema } from "@/DTO/user.dto"
-
-
 
 export function SignupForm({
   className,
@@ -92,7 +90,7 @@ export function SignupForm({
       console.log("Form data is valid:", result.data)
 
       setTimeout(() => {
-        router.push("/login")
+        router.push("/signin")
       }, 2000)
     } catch (error: unknown) {
       console.error("Erro ao criar conta:", error)
@@ -232,7 +230,7 @@ export function SignupForm({
           </form>
           <div className="bg-muted relative hidden md:block h-64 md:h-auto">
             <Image
-              src="https://i.pinimg.com/1200x/9d/35/dc/9d35dc538ce5f3e9c347846e0d86c118.jpg"
+              src="https://i.pinimg.com/1200x/93/0d/c1/930dc1ac4570507ca25303a967e0cc2d.jpg"
               alt="Image"
               fill
               sizes="(min-width: 768px) 50vw, 100vw"

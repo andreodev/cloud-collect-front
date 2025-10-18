@@ -1,5 +1,6 @@
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import Cookies from 'js-cookie';
 
 class ApiService { 
     private axiosInstance: AxiosInstance;
@@ -17,9 +18,10 @@ class ApiService {
         });
 
         this.axiosInstance.interceptors.request.use(
-            async (config) => {
+            (config) => {
+                // Tenta obter o token da memória ou do cookie
                 if (!this.token && typeof window !== "undefined") {
-                    await this.setTokenFromCookie();
+                    this.token = Cookies.get("auth_token") || null;
                 }
                 
                 if (this.token) {
@@ -40,6 +42,7 @@ class ApiService {
                     // Token expirado ou inválido
                     this.token = null;
                     if (typeof window !== "undefined") {
+                        Cookies.remove("auth_token");
                         console.error("Unauthorized - Token inválido");
                     }
                 }
@@ -48,23 +51,15 @@ class ApiService {
         );
     }
 
-    private async setTokenFromCookie(): Promise<void> {
-        try {
-            const cookie: { value?: string } | undefined | null =
-                await cookieStore.get("auth_token");
-            this.token = cookie?.value || null;
-        } catch (error) {
-            console.error("Erro ao buscar token do cookie:", error);
-            this.token = null;
-        }
-    }
-
     public setToken(token: string): void {
         this.token = token;
     }
 
     public clearToken(): void {
         this.token = null;
+        if (typeof window !== "undefined") {
+            Cookies.remove("auth_token");
+        }
     }
 
     // Métodos HTTP
