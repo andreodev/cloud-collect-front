@@ -25,7 +25,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AIWidget } from "@/components/AIWidget";
 
 export default function DashboardLayout({
   children,
@@ -164,7 +163,6 @@ export default function DashboardLayout({
             {children}
           </main>
 
-          {/* AI Widget Sidebar */}
         </div>
       </div>
     </div>
