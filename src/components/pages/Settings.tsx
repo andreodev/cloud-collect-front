@@ -1,13 +1,85 @@
+import { useState } from "react";
 import { Card } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Badge } from "../ui/badge";
-import { Check, Crown, Users, Building2, Mail, Trash2 } from "lucide-react";
+import { Textarea } from "../ui/textarea";
+import { Check, Crown, Users, Building2, Mail, Trash2, MessageSquare, Copy, Send, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 export function Settings() {
+  const [whatsappMessage, setWhatsappMessage] = useState(
+    "Olá {{nome}}! 👋\n\nEsta é uma mensagem da {{empresa_nome}}.\n\nIdentificamos um pagamento pendente:\n\n💰 Valor: {{valor}}\n📅 Vencimento: {{vencimento}}\n\n{{link_pagamento}}\n\nQualquer dúvida, estamos à disposição!\n\nAtenciosamente,\n{{empresa_nome}}\n📞 {{empresa_telefone}}"
+  );
+
+  const parameters = [
+    { key: "{{nome}}", description: "Nome do cliente", example: "João Silva" },
+    { key: "{{empresa}}", description: "Nome da empresa do cliente", example: "ABC Comércio Ltda" },
+    { key: "{{valor}}", description: "Valor da cobrança", example: "R$ 1.500,00" },
+    { key: "{{vencimento}}", description: "Data de vencimento", example: "25/10/2025" },
+    { key: "{{dias_vencido}}", description: "Dias em atraso (se vencido)", example: "5 dias" },
+    { key: "{{link_pagamento}}", description: "Link para pagamento", example: "https://pay.com/abc123" },
+    { key: "{{numero_cobranca}}", description: "Número da cobrança", example: "#12345" },
+    { key: "{{empresa_nome}}", description: "Nome da sua empresa", example: "Minha Empresa Ltda" },
+    { key: "{{empresa_telefone}}", description: "Telefone da sua empresa", example: "(11) 98765-4321" },
+  ];
+
+  const templates = [
+    {
+      name: "Cobrança Padrão",
+      message: "Olá {{nome}}! 👋\n\nEsta é uma mensagem da {{empresa_nome}}.\n\nIdentificamos um pagamento pendente:\n\n💰 Valor: {{valor}}\n📅 Vencimento: {{vencimento}}\n\n{{link_pagamento}}\n\nQualquer dúvida, estamos à disposição!\n\nAtenciosamente,\n{{empresa_nome}}\n📞 {{empresa_telefone}}"
+    },
+    {
+      name: "Lembrete Amigável",
+      message: "Oi {{nome}}! 😊\n\nTudo bem? Passando aqui para lembrar do pagamento:\n\n💰 {{valor}}\n📅 Vence em: {{vencimento}}\n\nVocê pode pagar pelo link:\n{{link_pagamento}}\n\nObrigado!"
+    },
+    {
+      name: "Cobrança Vencida",
+      message: "Olá {{nome}},\n\n⚠️ Notamos que seu pagamento está vencido há {{dias_vencido}}.\n\n💰 Valor: {{valor}}\n📅 Vencimento: {{vencimento}}\n\nPara regularizar:\n{{link_pagamento}}\n\nContamos com você!\n\n{{empresa_nome}}"
+    },
+    {
+      name: "Formal",
+      message: "Prezado(a) {{nome}},\n\nSeguem os dados para pagamento:\n\nCobrança: {{numero_cobranca}}\nValor: {{valor}}\nVencimento: {{vencimento}}\n\nLink de pagamento:\n{{link_pagamento}}\n\nAtenciosamente,\n{{empresa_nome}}\nTelefone: {{empresa_telefone}}"
+    }
+  ];
+
+  const getPreviewMessage = () => {
+    let preview = whatsappMessage;
+
+    // Replace parameters with example data
+    preview = preview.replace(/{{nome}}/g, "João Silva");
+    preview = preview.replace(/{{empresa}}/g, "ABC Comércio Ltda");
+    preview = preview.replace(/{{valor}}/g, "R$ 1.500,00");
+    preview = preview.replace(/{{vencimento}}/g, "25/10/2025");
+    preview = preview.replace(/{{dias_vencido}}/g, "5 dias");
+    preview = preview.replace(/{{link_pagamento}}/g, "https://pay.cobrafacil.com/abc123");
+    preview = preview.replace(/{{numero_cobranca}}/g, "#12345");
+    preview = preview.replace(/{{empresa_nome}}/g, "Minha Empresa Ltda");
+    preview = preview.replace(/{{empresa_telefone}}/g, "(11) 98765-4321");
+
+    return preview;
+  };
+
+  const copyParameter = (param: string) => {
+    navigator.clipboard.writeText(param);
+    toast.success(`Parâmetro ${param} copiado!`);
+  };
+
+  const saveWhatsappMessage = () => {
+    toast.success("Mensagem do WhatsApp salva com sucesso!");
+  };
+
+  const sendTestMessage = () => {
+    toast.success("Mensagem de teste enviada para seu WhatsApp!");
+  };
+
+  const applyTemplate = (templateMessage: string) => {
+    setWhatsappMessage(templateMessage);
+    toast.success("Template aplicado!");
+  };
+
   const plans = [
     {
       id: "free",
@@ -113,8 +185,12 @@ export function Settings() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="company" className="w-full">
+      <Tabs defaultValue="whatsapp" className="w-full">
         <TabsList className="rounded-xl mb-6">
+          <TabsTrigger value="whatsapp" className="gap-2">
+            <MessageSquare className="w-4 h-4" />
+            WhatsApp
+          </TabsTrigger>
           <TabsTrigger value="company" className="gap-2">
             <Building2 className="w-4 h-4" />
             Empresa
@@ -128,6 +204,210 @@ export function Settings() {
             Planos
           </TabsTrigger>
         </TabsList>
+
+        {/* WhatsApp Tab */}
+        <TabsContent value="whatsapp">
+          <div className="grid lg:grid-cols-2 gap-6">
+            {/* Editor Section */}
+            <div className="space-y-6">
+              {/* Message Editor */}
+              <Card className="p-6 rounded-2xl border-border">
+                <div className="flex items-center justify-between mb-4">
+                  <h3>Editor de Mensagem</h3>
+                  <Badge className="bg-[#25D366]/10 text-[#25D366] rounded-lg">
+                    WhatsApp
+                  </Badge>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="whatsapp-message">Mensagem</Label>
+                    <Textarea
+                      id="whatsapp-message"
+                      value={whatsappMessage}
+                      onChange={(e) => setWhatsappMessage(e.target.value)}
+                      className="mt-1 rounded-xl min-h-[300px] font-mono text-sm"
+                      placeholder="Digite sua mensagem aqui..."
+                    />
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Use os parâmetros abaixo para personalizar a mensagem
+                    </p>
+                  </div>
+
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={saveWhatsappMessage}
+                      className="flex-1 rounded-xl gap-2"
+                    >
+                      <Check className="w-4 h-4" />
+                      Salvar Mensagem
+                    </Button>
+                    <Button
+                      onClick={sendTestMessage}
+                      variant="outline"
+                      className="rounded-xl gap-2"
+                    >
+                      <Send className="w-4 h-4" />
+                      Testar
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Parameters */}
+              <Card className="p-6 rounded-2xl border-border">
+                <h3 className="mb-4">Parâmetros Disponíveis</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Clique para copiar e cole no editor de mensagem
+                </p>
+
+                <div className="grid gap-2">
+                  {parameters.map((param) => (
+                    <button
+                      key={param.key}
+                      onClick={() => copyParameter(param.key)}
+                      className="flex items-center justify-between p-3 rounded-xl border border-border hover:border-primary hover:bg-primary/5 transition-all text-left group"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <code className="text-sm bg-muted px-2 py-0.5 rounded text-primary">
+                            {param.key}
+                          </code>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {param.description}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Ex: {param.example}
+                        </p>
+                      </div>
+                      <Copy className="w-4 h-4 text-muted-foreground group-hover:text-primary flex-shrink-0 ml-2" />
+                    </button>
+                  ))}
+                </div>
+              </Card>
+
+              {/* Templates */}
+              <Card className="p-6 rounded-2xl border-border">
+                <div className="flex items-center gap-2 mb-4">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                  <h3>Templates Prontos</h3>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Escolha um template para começar
+                </p>
+
+                <div className="grid gap-2">
+                  {templates.map((template, index) => (
+                    <button
+                      key={index}
+                      onClick={() => applyTemplate(template.message)}
+                      className="p-3 rounded-xl border border-border hover:border-primary hover:bg-primary/5 transition-all text-left"
+                    >
+                      <p className="text-sm mb-1">{template.name}</p>
+                      <p className="text-xs text-muted-foreground line-clamp-2">
+                        {template.message.substring(0, 80)}...
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              </Card>
+            </div>
+
+            {/* Preview Section */}
+            <div className="space-y-6">
+              <Card className="p-6 rounded-2xl border-border sticky top-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <MessageSquare className="w-5 h-5 text-[#25D366]" />
+                  <h3>Preview da Mensagem</h3>
+                </div>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Veja como sua mensagem aparecerá no WhatsApp
+                </p>
+
+                {/* WhatsApp-style preview */}
+                <div className="bg-[#ECE5DD] rounded-2xl p-4 min-h-[400px]">
+                  {/* Date indicator */}
+                  <div className="flex justify-center mb-4">
+                    <div className="bg-white/90 px-3 py-1 rounded-full text-xs text-muted-foreground shadow-sm">
+                      HOJE
+                    </div>
+                  </div>
+
+                  {/* Message bubble */}
+                  <div className="flex justify-end mb-4">
+                    <div className="max-w-[85%]">
+                      <div className="bg-[#DCF8C6] rounded-2xl rounded-tr-sm p-3 shadow-sm">
+                        <p className="text-sm whitespace-pre-wrap break-words">
+                          {getPreviewMessage()}
+                        </p>
+                        <div className="flex items-center justify-end gap-1 mt-2">
+                          <span className="text-xs text-muted-foreground">
+                            {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                          <svg width="16" height="11" viewBox="0 0 16 11" fill="none">
+                            <path d="M11.0714 0.5L11.5 0.928571L5.78571 6.64286L5.35714 6.21429L11.0714 0.5Z" fill="#4FC3F7" />
+                            <path d="M14.2143 0.5L14.6429 0.928571L5.78571 9.78571L2.5 6.5L2.92857 6.07143L5.78571 8.92857L14.2143 0.5Z" fill="#4FC3F7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Info box */}
+                  <div className="bg-white/50 rounded-xl p-3 mt-6">
+                    <div className="flex items-start gap-2">
+                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Sparkles className="w-4 h-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm mb-1">Preview com dados de exemplo</p>
+                        <p className="text-xs text-muted-foreground">
+                          Na mensagem real, os parâmetros serão substituídos pelos dados do cliente e da cobrança.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Character count */}
+                  <div className="mt-4 text-center">
+                    <p className="text-xs text-muted-foreground">
+                      {whatsappMessage.length} caracteres • {Math.ceil(whatsappMessage.length / 160)} SMS
+                    </p>
+                  </div>
+                </div>
+
+                {/* Tips */}
+                <div className="mt-6 space-y-3">
+                  <div className="flex items-start gap-2 text-sm">
+                    <div className="w-5 h-5 bg-[#22c55e]/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 text-[#22c55e]" />
+                    </div>
+                    <p className="text-muted-foreground">
+                      Use emojis para tornar a mensagem mais amigável
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2 text-sm">
+                    <div className="w-5 h-5 bg-[#22c55e]/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 text-[#22c55e]" />
+                    </div>
+                    <p className="text-muted-foreground">
+                      Mantenha a mensagem objetiva e clara
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2 text-sm">
+                    <div className="w-5 h-5 bg-[#22c55e]/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="w-3 h-3 text-[#22c55e]" />
+                    </div>
+                    <p className="text-muted-foreground">
+                      Sempre inclua o link de pagamento
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </TabsContent>
 
         {/* Company Tab */}
         <TabsContent value="company">
@@ -284,11 +564,10 @@ export function Settings() {
                         <td className="py-4 text-muted-foreground">{user.role}</td>
                         <td className="py-4">
                           <Badge
-                            className={`rounded-lg ${
-                              user.status === "active"
+                            className={`rounded-lg ${user.status === "active"
                                 ? "bg-[#22c55e]/10 text-[#22c55e]"
                                 : "bg-[#facc15]/10 text-[#facc15]"
-                            }`}
+                              }`}
                           >
                             {user.status === "active" ? "Ativo" : "Pendente"}
                           </Badge>
@@ -338,11 +617,10 @@ export function Settings() {
               {plans.map((plan) => (
                 <Card
                   key={plan.id}
-                  className={`p-6 rounded-2xl relative overflow-hidden transition-all ${
-                    plan.current
+                  className={`p-6 rounded-2xl relative overflow-hidden transition-all ${plan.current
                       ? "border-primary shadow-lg"
                       : "border-border hover:border-primary/50"
-                  }`}
+                    }`}
                 >
                   {plan.popular && !plan.current && (
                     <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1 rounded-bl-xl text-sm">
@@ -395,7 +673,7 @@ export function Settings() {
 
             <Card className="p-6 rounded-2xl border-border">
               <h3 className="mb-4">Comparativo de Planos</h3>
-              
+
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>

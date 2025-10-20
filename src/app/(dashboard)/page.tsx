@@ -24,6 +24,7 @@ import {
   ResponsiveContainer,
   Legend
 } from "recharts";
+import { AIWidget } from "@/components/AIWidget";
 
 export default function DashboardPage() {
   const cashFlowData = [
@@ -88,14 +89,16 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* AI Alert */}
-      <Alert className="border-[#ef4444]/20 bg-[#ef4444]/5 rounded-2xl">
-        <Sparkles className="h-5 w-5 text-[#ef4444]" />
-        <AlertDescription className="text-[#ef4444] ml-2">
-          🔴 Atenção: Seu caixa cairá 25% no próximo mês. Considere antecipar recebíveis ou reduzir despesas.
-        </AlertDescription>
-      </Alert>
+    <div className="flex gap-6">
+      {/* Main Content */}
+      <div className="flex-1 space-y-6">
+        {/* AI Alert */}
+        <Alert className="border-[#ef4444]/20 bg-[#ef4444]/5 rounded-2xl">
+          <Sparkles className="h-5 w-5 text-[#ef4444]" />
+          <AlertDescription className="text-[#ef4444] ml-2">
+            🔴 Atenção: Seu caixa cairá 25% no próximo mês. Considere antecipar recebíveis ou reduzir despesas.
+          </AlertDescription>
+        </Alert>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -242,6 +245,10 @@ export default function DashboardPage() {
           </table>
         </div>
       </Card>
+      </div>
+
+      {/* AI Widget - Fixed on the right side */}
+      <AIWidget />
     </div>
   );
 }

@@ -165,7 +165,6 @@ export default function DashboardLayout({
           </main>
 
           {/* AI Widget Sidebar */}
-          <AIWidget />
         </div>
       </div>
     </div>
