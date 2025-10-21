@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# Cloud Collect Front
 
-First, run the development server:
+Este é o frontend do sistema Cloud Collect, desenvolvido com Next.js e TypeScript. O objetivo é fornecer uma interface moderna e responsiva para gestão financeira, incluindo fluxo de caixa, cobranças, relatórios e configurações.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Principais Tecnologias
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Next.js**: Framework React para aplicações web modernas.
+- **TypeScript**: Tipagem estática para maior segurança e produtividade.
+- **ESLint**: Padronização e qualidade de código.
+- **PostCSS**: Processamento avançado de CSS.
+- **Vercel**: Deploy e hospedagem otimizada para projetos Next.js.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Estrutura de Pastas
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `src/app`: Rotas e layouts principais da aplicação.
+  - `auth`: Tela de login.
+  - `dashboard`: Área principal do usuário, com sub-rotas para fluxo de caixa, cobranças, relatórios e configurações.
+- `src/components`: Componentes reutilizáveis, incluindo widgets, cards, UI e páginas.
+- `src/hooks`: Hooks customizados para autenticação, animações e notificações.
+- `src/lib`: Funções utilitárias.
+- `src/service`: Serviços de integração com API.
+- `src/store`: Gerenciamento de estado global (Redux).
+- `public`: Arquivos estáticos e imagens.
 
-## Learn More
+## Funcionalidades
 
-To learn more about Next.js, take a look at the following resources:
+- Autenticação de usuários
+- Dashboard financeiro com KPIs
+- Gestão de fluxo de caixa
+- Controle de cobranças
+- Relatórios detalhados
+- Configurações personalizáveis
+- Componentes de UI modernos e responsivos
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Como rodar o projeto
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Instale as dependências:
+	```zsh
+	npm install
+	```
+2. Inicie o servidor de desenvolvimento:
+	```zsh
+	npm run dev
+	```
+3. Acesse em `http://localhost:3000`.
 
-## Deploy on Vercel
+## Deploy
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+O projeto está configurado para deploy automático na Vercel. Basta conectar o repositório e seguir as instruções da plataforma.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contribuição
+
+1. Fork este repositório.
+2. Crie uma branch (`git checkout -b feature/nova-feature`).
+3. Faça suas alterações e commit.
+4. Envie um pull request.
+
+## Licença
+
+Este projeto está sob a licença MIT.
