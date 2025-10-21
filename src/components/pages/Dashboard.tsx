@@ -255,11 +255,8 @@ export function Dashboard() {
                     <td className="py-4 text-muted-foreground">{charge.date}</td>
                     <td className="py-4">
                       <div className="flex items-center justify-end gap-2">
-                        <Button variant="ghost" size="icon" className="rounded-xl" title="Ver detalhes" onClick={() => { setSelectedCharge(charge); setShowDetailsDialog(true); }}>
+                        <Button variant="ghost" size="icon" className="rounded-xl cursor-pointer" title="Ver detalhes" onClick={() => { setSelectedCharge(charge); setShowDetailsDialog(true); }}>
                           <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="rounded-xl" title="Enviar via WhatsApp" onClick={() => handleSendWhatsApp(charge)}>
-                          <Send className="w-4 h-4" />
                         </Button>
                         <Button variant="ghost" size="icon" className="rounded-xl" title="Mais opções">
                           <MoreVertical className="w-4 h-4" />
@@ -275,30 +272,42 @@ export function Dashboard() {
         }}>
           <DialogContent className="rounded-2xl max-w-md">
             <DialogHeader>
-              <DialogTitle>Detalhes da Cobrança</DialogTitle>
+              <DialogTitle className="flex items-center gap-2">
+                <span>Detalhes da Cobrança</span>
+                {selectedCharge && (
+                  <span title={selectedCharge.status} className="ml-2">{getStatusBadge(selectedCharge.status)}</span>
+                )}
+              </DialogTitle>
               <DialogDescription>Informações completas da cobrança</DialogDescription>
             </DialogHeader>
             {selectedCharge && (
-              <div className="space-y-4 mt-2">
-                <div>
-                  <Label>Cliente</Label>
-                  <p className="font-semibold mt-1">{selectedCharge.client}</p>
+              <div className="space-y-6 mt-4">
+                <div className="flex items-center gap-3">
+                  <div className="bg-accent rounded-full w-12 h-12 flex items-center justify-center">
+                    <span className="text-xl font-bold text-primary">{selectedCharge.client[0]}</span>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Cliente</Label>
+                    <p className="font-semibold mt-1 text-lg">{selectedCharge.client}</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-xs">Valor</Label>
+                    <p className="font-semibold mt-1 text-[#22c55e] text-lg">{selectedCharge.value}</p>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Data</Label>
+                    <p className="mt-1 text-muted-foreground">{selectedCharge.date}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label className="text-xs">Status</Label>
+                  <span className="mt-1" title={selectedCharge.status}>{getStatusBadge(selectedCharge.status)}</span>
                 </div>
                 <div>
-                  <Label>Valor</Label>
-                  <p className="font-semibold mt-1">{selectedCharge.value}</p>
-                </div>
-                <div>
-                  <Label>Status</Label>
-                  <span className="mt-1">{getStatusBadge(selectedCharge.status)}</span>
-                </div>
-                <div>
-                  <Label>Data</Label>
-                  <p className="mt-1">{selectedCharge.date}</p>
-                </div>
-                <div>
-                  <Label>ID</Label>
-                  <p className="mt-1">#{selectedCharge.id}</p>
+                  <Label className="text-xs">ID da Cobrança</Label>
+                  <p className="mt-1 text-muted-foreground">#{selectedCharge.id}</p>
                 </div>
               </div>
             )}

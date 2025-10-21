@@ -34,16 +34,16 @@ export function ChargesTable({ charges, getStatusBadge, onView, onSendWhatsApp }
               <td className="py-4 text-muted-foreground">{charge.dueDate}</td>
               <td className="py-4">
                 <div className="flex items-center justify-end gap-2">
-                  <Button variant="ghost" size="icon" className="rounded-xl" title="Ver detalhes" onClick={() => onView(charge)}>
+                  <Button variant="ghost" size="icon" className="rounded-xl cursor-pointer" title="Ver detalhes" onClick={() => onView(charge)}>
                     <Eye className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="rounded-xl text-[#22c55e] hover:text-[#22c55e] hover:bg-[#22c55e]/10" title="Enviar via WhatsApp" onClick={() => onSendWhatsApp(charge.client, charge)}>
+                  <Button variant="ghost" size="icon" className="rounded-xl cursor-pointer text-[#22c55e] hover:text-[#22c55e] hover:bg-[#22c55e]/10" title="Enviar via WhatsApp" onClick={() => onSendWhatsApp(charge.client, charge)}>
                     <Send className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="rounded-xl" title="Baixar recibo">
+                  <Button variant="ghost" size="icon" className="rounded-xl cursor-pointer" title="Baixar recibo">
                     <Download className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="rounded-xl">
+                  <Button variant="ghost" size="icon" className="rounded-xl cursor-pointer">
                     <MoreVertical className="w-4 h-4" />
                   </Button>
                 </div>
