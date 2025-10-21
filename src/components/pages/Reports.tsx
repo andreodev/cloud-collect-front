@@ -13,8 +13,25 @@ import {
 } from "../ui/select";
 import { FileText, Download, Send, Eye, Filter } from "lucide-react";
 import { toast } from "sonner";
+import Image from "next/image";
 
 export function Reports() {
+  const pendingMessage = `Olá! Este é um lembrete sobre sua fatura no valor de R$ 5.500,00 com vencimento em 25/10/2025.\n\nPara facilitar o pagamento, acesse o link abaixo:\nhttps://pay.cobrafacil.com/abc123\n\nEm caso de dúvidas, estamos à disposição!`;
+  const paidMessage = `Pagamento confirmado! Recebemos sua transferência de R$ 5.500,00 em 20/10/2025.\n\nSeu recibo está disponível para download:\nhttps://pay.cobrafacil.com/recibo123\n\nObrigado pela preferência!`;
+
+  const handleCopy = (msg: string) => {
+    navigator.clipboard.writeText(msg);
+    toast.success("Mensagem copiada!");
+  };
+  const handleSimulateSend = (msg: string) => {
+    toast.success("Simulação de envio pelo WhatsApp!");
+  };
+  const handleDownloadReceipt = () => {
+    toast.success("Recibo baixado!");
+  };
+  const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [templatePreview, setTemplatePreview] = useState<string>("");
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [filterClient, setFilterClient] = useState("all");
@@ -119,7 +136,6 @@ export function Reports() {
             Gerencie e exporte seus documentos
           </p>
         </div>
-
         <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <Button
             variant="outline"
@@ -139,14 +155,12 @@ export function Reports() {
           </Button>
         </div>
       </div>
-
       {/* Filters */}
       <Card className="p-4 sm:p-6 rounded-2xl border-border">
         <div className="flex items-center gap-2 mb-4">
           <Filter className="w-5 h-5 text-muted-foreground" />
           <h4>Filtros</h4>
         </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <Label htmlFor="filter-client">Cliente</Label>
@@ -162,7 +176,6 @@ export function Reports() {
               </SelectContent>
             </Select>
           </div>
-
           <div>
             <Label htmlFor="filter-category">Categoria</Label>
             <Select value={filterCategory} onValueChange={setFilterCategory}>
@@ -177,7 +190,6 @@ export function Reports() {
               </SelectContent>
             </Select>
           </div>
-
           <div>
             <Label htmlFor="filter-start">Data Início</Label>
             <Input
@@ -186,7 +198,6 @@ export function Reports() {
               className="mt-1 rounded-xl"
             />
           </div>
-
           <div>
             <Label htmlFor="filter-end">Data Fim</Label>
             <Input
@@ -197,11 +208,9 @@ export function Reports() {
           </div>
         </div>
       </Card>
-
       {/* Reports List */}
       <Card className="p-4 sm:p-6 rounded-2xl border-border">
         <h3 className="mb-6">Relatórios Gerados</h3>
-
         {/* Desktop Table */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
@@ -228,7 +237,7 @@ export function Reports() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="rounded-xl"
+                        className="rounded-xl cursor-pointer"
                         title="Visualizar"
                         onClick={() => { setSelectedReport(report); setShowDetailsDialog(true); }}
                       >
@@ -237,7 +246,7 @@ export function Reports() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="rounded-xl"
+                        className="rounded-xl cursor-pointer"
                         title="Baixar"
                         onClick={() => handleDownload(report.type)}
                       >
@@ -259,7 +268,6 @@ export function Reports() {
             </tbody>
           </table>
         </div>
-
         {/* Mobile Cards */}
         <div className="md:hidden space-y-4">
           {reports.map((report) => (
@@ -269,7 +277,6 @@ export function Reports() {
                   <h4 className="font-semibold mb-1">{report.type}</h4>
                   <p className="text-sm text-muted-foreground">{report.period}</p>
                 </div>
-
                 <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border text-sm">
                   <div>
                     <p className="text-xs text-muted-foreground">Cliente</p>
@@ -284,7 +291,6 @@ export function Reports() {
                     <p>{report.date}</p>
                   </div>
                 </div>
-
                 <div className="flex items-center gap-2 pt-2">
                   <Button
                     variant="outline"
@@ -318,15 +324,29 @@ export function Reports() {
           ))}
         </div>
       </Card>
-
       {/* Receipt Templates */}
       <div>
         <h3 className="mb-4">Modelos de Recibo</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {receiptTemplates.map((template) => (
-            <Card key={template.id} className="overflow-hidden rounded-2xl border-border hover:shadow-lg transition-shadow">
-              <div className="aspect-[4/3] bg-accent flex items-center justify-center">
-                <FileText className="w-16 h-16 text-muted-foreground" />
+            <Card
+              key={template.id}
+              className={`overflow-hidden rounded-2xl border-border hover:shadow-lg transition-shadow cursor-pointer ${selectedTemplate === template.id ? 'border-2 border-primary shadow-lg' : ''}`}
+              onClick={() => setSelectedTemplate(template.id)}
+            >
+              <div className="aspect-[4/3] bg-accent flex items-center justify-center relative">
+                <Image
+                  src={template.preview}
+                  alt={template.name}
+                  width={400}
+                  height={300}
+                  className="object-cover w-full h-full rounded-t-2xl"
+                  style={{ maxHeight: 180 }}
+                  onClick={e => { e.stopPropagation(); setTemplatePreview(template.preview); setShowTemplateModal(true); }}
+                />
+                {selectedTemplate === template.id && (
+                  <span className="absolute top-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded-xl shadow">Selecionado</span>
+                )}
               </div>
               <div className="p-4">
                 <h4 className="mb-1">{template.name}</h4>
@@ -334,8 +354,34 @@ export function Reports() {
                   {template.description}
                 </p>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1 rounded-xl" onClick={() => toast.info("Visualização de modelo não implementada.")}>Visualizar</Button>
-                  <Button size="sm" className="flex-1 rounded-xl" onClick={() => toast.success("Modelo aplicado!")}>Usar Modelo</Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 rounded-xl"
+                    onClick={e => { e.stopPropagation(); setTemplatePreview(template.preview); setShowTemplateModal(true); }}
+                  >Visualizar</Button>
+                  <Button
+                    size="sm"
+                    className={`flex-1 rounded-xl ${selectedTemplate === template.id ? 'bg-primary text-white' : ''}`}
+                    onClick={e => { e.stopPropagation(); setSelectedTemplate(template.id); toast.success("Modelo aplicado!"); }}
+                  >Usar Modelo</Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+        <Dialog open={showTemplateModal} onOpenChange={setShowTemplateModal}>
+          <DialogContent className="rounded-2xl max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Visualização do Modelo</DialogTitle>
+              <DialogDescription>Veja o modelo de recibo em tamanho ampliado</DialogDescription>
+            </DialogHeader>
+            <div className="flex items-center justify-center">
+              <Image src={templatePreview} alt="Preview do modelo" width={400} height={300} className="rounded-xl max-h-96" />
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
       {/* Modal de Detalhes do Relatório */}
       <Dialog open={showDetailsDialog} onOpenChange={(open) => {
         setShowDetailsDialog(open);
@@ -343,81 +389,88 @@ export function Reports() {
       }}>
         <DialogContent className="rounded-2xl max-w-md">
           <DialogHeader>
-            <DialogTitle>Detalhes do Relatório</DialogTitle>
-            <DialogDescription>Informações completas do relatório</DialogDescription>
+            <DialogTitle className="flex items-center gap-2 text-lg">
+              <FileText className="w-5 h-5 text-primary" />
+              Detalhes do Relatório
+            </DialogTitle>
+            <DialogDescription className="mb-2">Informações completas do relatório</DialogDescription>
           </DialogHeader>
           {selectedReport && (
-            <div className="space-y-4 mt-2">
-              <div>
-                <Label>Tipo</Label>
-                <p className="font-semibold mt-1">{selectedReport.type}</p>
-              </div>
-              <div>
-                <Label>Período</Label>
-                <p className="mt-1 text-muted-foreground">{selectedReport.period}</p>
-              </div>
-              <div>
-                <Label>Cliente</Label>
-                <p className="mt-1">{selectedReport.client}</p>
-              </div>
-              <div>
-                <Label>Categoria</Label>
-                <p className="mt-1">{selectedReport.category}</p>
-              </div>
-              <div>
-                <Label>Data</Label>
-                <p className="mt-1">{selectedReport.date}</p>
-              </div>
-              <div>
-                <Label>ID</Label>
-                <p className="mt-1">#{selectedReport.id}</p>
+            <div className="space-y-4 mt-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2 flex items-center gap-2 mb-2">
+                  <FileText className="w-4 h-4 text-muted-foreground" />
+                  <span className="font-semibold text-base">{selectedReport.type}</span>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Período</Label>
+                  <p className="mt-1 text-sm">{selectedReport.period}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Cliente</Label>
+                  <p className="mt-1 text-sm">{selectedReport.client}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Categoria</Label>
+                  <p className="mt-1 text-sm">{selectedReport.category}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Data</Label>
+                  <p className="mt-1 text-sm">{selectedReport.date}</p>
+                </div>
+                <div className="col-span-2 flex items-center gap-2 mt-2">
+                  <span className="bg-accent px-2 py-1 rounded text-xs text-muted-foreground">ID</span>
+                  <span className="font-mono text-sm">#{selectedReport.id}</span>
+                </div>
               </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </div>
-
       {/* WhatsApp Message Preview */}
       <Card className="p-4 sm:p-6 rounded-2xl border-border bg-[#22c55e]/5">
         <h3 className="mb-4">Prévia de Mensagem WhatsApp</h3>
-        
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="bg-card p-4 rounded-2xl border border-border">
-            <p className="mb-2">📄 <strong>Cobrança Pendente</strong></p>
-            <p className="text-sm text-muted-foreground mb-3">
-              Olá! Este é um lembrete sobre sua fatura no valor de <strong>R$ 5.500,00</strong> com vencimento em <strong>25/10/2025</strong>.
-            </p>
-            <p className="text-sm text-muted-foreground mb-3">
-              Para facilitar o pagamento, acesse o link abaixo:
-            </p>
-            <Button variant="outline" size="sm" className="rounded-xl w-full mb-3">
-              🔗 Acessar Fatura
-            </Button>
-            <p className="text-xs text-muted-foreground">
-              Em caso de dúvidas, estamos à disposição!
-            </p>
+          {/* Cobrança Pendente */}
+          <div className="bg-card p-4 rounded-2xl border border-border flex flex-col justify-between">
+            <div>
+              <p className="mb-2 flex items-center gap-2 text-lg">
+                <span className="animate-bounce">📄</span> <strong>Cobrança Pendente</strong>
+              </p>
+              <p className="text-sm text-muted-foreground mb-3 whitespace-pre-line">
+                {pendingMessage}
+              </p>
+            </div>
+            <div className="flex gap-2 mt-2">
+              <Button variant="outline" size="sm" className="rounded-xl flex-1" onClick={() => handleCopy(pendingMessage)}>
+                Copiar Mensagem
+              </Button>
+              <Button size="sm" className="rounded-xl flex-1 bg-[#22c55e]/80 text-white" onClick={() => handleSimulateSend(pendingMessage)}>
+                Simular Envio
+              </Button>
+            </div>
           </div>
-
-          <div className="bg-card p-4 rounded-2xl border border-border">
-            <p className="mb-2">✅ <strong>Confirmação de Pagamento</strong></p>
-            <p className="text-sm text-muted-foreground mb-3">
-              Pagamento confirmado! Recebemos sua transferência de <strong>R$ 5.500,00</strong> em <strong>20/10/2025</strong>.
-            </p>
-            <p className="text-sm text-muted-foreground mb-3">
-              Seu recibo está disponível para download:
-            </p>
-            <Button variant="outline" size="sm" className="rounded-xl w-full mb-3">
-              📥 Baixar Recibo
-            </Button>
-            <p className="text-xs text-muted-foreground">
-              Obrigado pela preferência!
-            </p>
+          {/* Confirmação de Pagamento */}
+          <div className="bg-card p-4 rounded-2xl border border-border flex flex-col justify-between">
+            <div>
+              <p className="mb-2 flex items-center gap-2 text-lg">
+                <span className="animate-pulse">✅</span> <strong>Confirmação de Pagamento</strong>
+              </p>
+              <p className="text-sm text-muted-foreground mb-3 whitespace-pre-line">
+                {paidMessage}
+              </p>
+            </div>
+            <div className="flex gap-2 mt-2">
+              <Button variant="outline" size="sm" className="rounded-xl flex-1" onClick={() => handleCopy(paidMessage)}>
+                Copiar Mensagem
+              </Button>
+              <Button size="sm" className="rounded-xl flex-1 bg-[#22c55e]/80 text-white" onClick={() => handleSimulateSend(paidMessage)}>
+                Simular Envio
+              </Button>
+              <Button size="sm" className="rounded-xl flex-1 bg-[#6366f1]/80 text-white" onClick={handleDownloadReceipt}>
+                📥 Baixar Recibo
+              </Button>
+            </div>
           </div>
         </div>
       </Card>
