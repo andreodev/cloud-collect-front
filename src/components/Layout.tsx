@@ -50,7 +50,7 @@ export function Layout({ children, currentPage, onNavigate, onLogout }: LayoutPr
         } transition-all duration-300 bg-card border-r border-border flex flex-col overflow-hidden`}
       >
         <div className="p-6 border-b border-border">
-          <h1 className="text-primary">Cobra Fácil Cloud</h1>
+          <h1 className="text-primary">Cloud Collect</h1>
         </div>
         
         <nav className="flex-1 p-4">

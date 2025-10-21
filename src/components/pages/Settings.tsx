@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useWhatsappTemplate } from "../../store/whatsappTemplate";
 import { Card } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -10,9 +11,8 @@ import { Check, Crown, Users, Building2, Mail, Trash2, MessageSquare, Copy, Send
 import { toast } from "sonner";
 
 export function Settings() {
-  const [whatsappMessage, setWhatsappMessage] = useState(
-    "Olá {{nome}}! 👋\n\nEsta é uma mensagem da {{empresa_nome}}.\n\nIdentificamos um pagamento pendente:\n\n💰 Valor: {{valor}}\n📅 Vencimento: {{vencimento}}\n\n{{link_pagamento}}\n\nQualquer dúvida, estamos à disposição!\n\nAtenciosamente,\n{{empresa_nome}}\n📞 {{empresa_telefone}}"
-  );
+  const { template, setTemplate } = useWhatsappTemplate();
+  const [whatsappMessage, setWhatsappMessage] = useState(template);
 
   const parameters = [
     { key: "{{nome}}", description: "Nome do cliente", example: "João Silva" },
@@ -68,6 +68,7 @@ export function Settings() {
   };
 
   const saveWhatsappMessage = () => {
+    setTemplate(whatsappMessage);
     toast.success("Mensagem do WhatsApp salva com sucesso!");
   };
 
@@ -77,6 +78,7 @@ export function Settings() {
 
   const applyTemplate = (templateMessage: string) => {
     setWhatsappMessage(templateMessage);
+    setTemplate(templateMessage);
     toast.success("Template aplicado!");
   };
 

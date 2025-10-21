@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/dialog";
 import { Card } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -14,6 +15,8 @@ import { FileText, Download, Send, Eye, Filter } from "lucide-react";
 import { toast } from "sonner";
 
 export function Reports() {
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [filterClient, setFilterClient] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
 
@@ -85,8 +88,21 @@ export function Reports() {
     toast.success(`Download iniciado: ${reportName}`);
   };
 
-  const handleSendWhatsApp = (reportName: string) => {
-    toast.success(`${reportName} enviado via WhatsApp`);
+  type Report = {
+    id: number;
+    type: string;
+    period: string;
+    client: string;
+    category: string;
+    date: string;
+  };
+
+  const handleSendWhatsApp = (report: Report) => {
+  const phone = "5592991784771";
+  const message = `Olá!\n\nSegue em anexo o relatório "${report.type}" referente ao período ${report.period}, para o cliente: ${report.client}.\n\nCategoria: ${report.category}\nData de geração: ${report.date}\n\nPara visualizar ou baixar o documento, acesse o sistema ou solicite o envio do arquivo em PDF.\n\nCaso tenha dúvidas ou precise de suporte, estamos à disposição pelo WhatsApp ou e-mail.\n\nAtenciosamente,\nEquipe Cloud Collect`;
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  window.open(url, "_blank");
+  toast.success(`${report.type} enviado via WhatsApp`);
   };
 
   const handleExport = (format: string) => {
@@ -214,6 +230,7 @@ export function Reports() {
                         size="icon"
                         className="rounded-xl"
                         title="Visualizar"
+                        onClick={() => { setSelectedReport(report); setShowDetailsDialog(true); }}
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -231,7 +248,7 @@ export function Reports() {
                         size="icon"
                         className="rounded-xl text-[#22c55e] hover:text-[#22c55e] hover:bg-[#22c55e]/10"
                         title="Enviar via WhatsApp"
-                        onClick={() => handleSendWhatsApp(report.type)}
+                        onClick={() => handleSendWhatsApp(report)}
                       >
                         <Send className="w-4 h-4" />
                       </Button>
@@ -273,6 +290,7 @@ export function Reports() {
                     variant="outline"
                     size="sm"
                     className="flex-1 rounded-xl gap-2"
+                    onClick={() => { setSelectedReport(report); setShowDetailsDialog(true); }}
                   >
                     <Eye className="w-4 h-4" />
                     Ver
@@ -290,7 +308,7 @@ export function Reports() {
                     variant="outline"
                     size="icon"
                     className="rounded-xl text-[#22c55e] hover:text-[#22c55e] hover:bg-[#22c55e]/10"
-                    onClick={() => handleSendWhatsApp(report.type)}
+                    onClick={() => handleSendWhatsApp(report)}
                   >
                     <Send className="w-4 h-4" />
                   </Button>
@@ -316,12 +334,48 @@ export function Reports() {
                   {template.description}
                 </p>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1 rounded-xl">
-                    Visualizar
-                  </Button>
-                  <Button size="sm" className="flex-1 rounded-xl">
-                    Usar Modelo
-                  </Button>
+                  <Button variant="outline" size="sm" className="flex-1 rounded-xl" onClick={() => toast.info("Visualização de modelo não implementada.")}>Visualizar</Button>
+                  <Button size="sm" className="flex-1 rounded-xl" onClick={() => toast.success("Modelo aplicado!")}>Usar Modelo</Button>
+      {/* Modal de Detalhes do Relatório */}
+      <Dialog open={showDetailsDialog} onOpenChange={(open) => {
+        setShowDetailsDialog(open);
+        if (!open) setSelectedReport(null);
+      }}>
+        <DialogContent className="rounded-2xl max-w-md">
+          <DialogHeader>
+            <DialogTitle>Detalhes do Relatório</DialogTitle>
+            <DialogDescription>Informações completas do relatório</DialogDescription>
+          </DialogHeader>
+          {selectedReport && (
+            <div className="space-y-4 mt-2">
+              <div>
+                <Label>Tipo</Label>
+                <p className="font-semibold mt-1">{selectedReport.type}</p>
+              </div>
+              <div>
+                <Label>Período</Label>
+                <p className="mt-1 text-muted-foreground">{selectedReport.period}</p>
+              </div>
+              <div>
+                <Label>Cliente</Label>
+                <p className="mt-1">{selectedReport.client}</p>
+              </div>
+              <div>
+                <Label>Categoria</Label>
+                <p className="mt-1">{selectedReport.category}</p>
+              </div>
+              <div>
+                <Label>Data</Label>
+                <p className="mt-1">{selectedReport.date}</p>
+              </div>
+              <div>
+                <Label>ID</Label>
+                <p className="mt-1">#{selectedReport.id}</p>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
                 </div>
               </div>
             </Card>

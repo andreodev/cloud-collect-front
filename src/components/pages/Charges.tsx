@@ -1,33 +1,26 @@
 import { useState } from "react";
+import { useWhatsappTemplate } from "../../store/whatsappTemplate";
 import { Card } from "../ui/card";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 import { Badge } from "../ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { Plus, Search, Filter, Eye, Send, MoreVertical, Download } from "lucide-react";
 import { toast } from "sonner";
+import { ChargesTable } from "./charges/ChargesTable";
+import { ChargeCard } from "./charges/ChargeCard";
+import { ChargesFilters } from "./charges/ChargesFilters";
+import { ChargesSummary } from "./charges/ChargesSummary";
+import { NewChargeDialog } from "./charges/NewChargeDialog";
+import { ChargeDetailsDialog, Charge } from "./charges/ChargeDetailsDialog";
+
+
+
 
 export function Charges() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [showNewChargeDialog, setShowNewChargeDialog] = useState(false);
+  const [selectedCharge, setSelectedCharge] = useState<Charge | null>(null);
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
 
-  const charges = [
+  const charges: Charge[] = [
     {
       id: 1,
       client: "Empresa ABC Ltda",
@@ -111,18 +104,28 @@ export function Charges() {
   const filteredCharges = charges.filter((charge) => {
     const matchesStatus = filterStatus === "all" || charge.status === filterStatus;
     const matchesSearch = charge.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          charge.description.toLowerCase().includes(searchTerm.toLowerCase());
+      charge.description.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 
-  const handleCreateCharge = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.success("Cobrança criada com sucesso!");
-    setShowNewChargeDialog(false);
-  };
-
-  const handleSendWhatsApp = (client: string) => {
-    toast.success(`Lembrete enviado para ${client} via WhatsApp`);
+  const { template } = useWhatsappTemplate();
+  const handleSendWhatsApp = (client: string, charge?: Charge) => {
+    const phone = "5592991784771";
+    let message = template;
+    if (charge) {
+      message = message.replace(/{{nome}}/g, client);
+      message = message.replace(/{{empresa}}/g, charge.client);
+      message = message.replace(/{{valor}}/g, charge.value);
+      message = message.replace(/{{vencimento}}/g, charge.dueDate);
+      message = message.replace(/{{dias_vencido}}/g, charge.status === "overdue" ? "5 dias" : "0");
+      message = message.replace(/{{link_pagamento}}/g, "https://pay.cobrafacil.com/abc123");
+      message = message.replace(/{{numero_cobranca}}/g, `#${charge.id}`);
+      message = message.replace(/{{empresa_nome}}/g, "Minha Empresa Ltda");
+      message = message.replace(/{{empresa_telefone}}/g, "(11) 98765-4321");
+    }
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+    toast.success(`Lembrete enviado para ${client} via WhatsApp (simulado)`);
   };
 
   return (
@@ -131,274 +134,60 @@ export function Charges() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="mb-1">Cobranças</h2>
-          <p className="text-muted-foreground">
-            Gerencie todas as suas cobranças
-          </p>
+          <p className="text-muted-foreground">Gerencie todas as suas cobranças</p>
         </div>
-
-        <Dialog open={showNewChargeDialog} onOpenChange={setShowNewChargeDialog}>
-          <DialogTrigger asChild>
-            <Button className="gap-2 rounded-xl shadow-lg w-full sm:w-auto">
-              <Plus className="w-5 h-5" />
-              Nova Cobrança
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="rounded-3xl">
-            <DialogHeader>
-              <DialogTitle>Nova Cobrança</DialogTitle>
-              <DialogDescription>
-                Preencha os dados para criar uma nova cobrança
-              </DialogDescription>
-            </DialogHeader>
-
-            <form onSubmit={handleCreateCharge} className="space-y-4 mt-4">
-              <div>
-                <Label htmlFor="client">Cliente</Label>
-                <Input
-                  id="client"
-                  placeholder="Nome do cliente"
-                  className="mt-1 rounded-xl"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="value">Valor</Label>
-                  <Input
-                    id="value"
-                    type="text"
-                    placeholder="R$ 0,00"
-                    className="mt-1 rounded-xl"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="dueDate">Vencimento</Label>
-                  <Input
-                    id="dueDate"
-                    type="date"
-                    className="mt-1 rounded-xl"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="paymentMethod">Forma de Pagamento</Label>
-                <Select>
-                  <SelectTrigger className="mt-1 rounded-xl">
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pix">PIX</SelectItem>
-                    <SelectItem value="boleto">Boleto</SelectItem>
-                    <SelectItem value="cartao">Cartão</SelectItem>
-                    <SelectItem value="transferencia">Transferência</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="description">Descrição</Label>
-                <Input
-                  id="description"
-                  placeholder="Descrição da cobrança"
-                  className="mt-1 rounded-xl"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShowNewChargeDialog(false)}
-                  className="flex-1 rounded-xl"
-                >
-                  Cancelar
-                </Button>
-                <Button type="submit" className="flex-1 rounded-xl">
-                  Criar Cobrança
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <NewChargeDialog open={showNewChargeDialog} onOpenChange={setShowNewChargeDialog} />
       </div>
 
       {/* Filters */}
       <Card className="p-6 rounded-2xl border-border">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por cliente ou descrição..."
-              className="pl-10 rounded-xl"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-
-          <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="w-full md:w-48 rounded-xl">
-              <Filter className="w-4 h-4 mr-2" />
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="paid">Pagos</SelectItem>
-              <SelectItem value="pending">Pendentes</SelectItem>
-              <SelectItem value="overdue">Vencidos</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <ChargesFilters
+          searchTerm={searchTerm}
+          onSearchTermChange={setSearchTerm}
+          filterStatus={filterStatus}
+          onFilterStatusChange={setFilterStatus}
+        />
       </Card>
 
-      {/* Charges Table */}
+      {/* Charges Table & Mobile Cards */}
       <Card className="p-6 rounded-2xl border-border">
-        {/* Desktop Table */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left pb-4 text-muted-foreground">Cliente</th>
-                <th className="text-left pb-4 text-muted-foreground">Descrição</th>
-                <th className="text-left pb-4 text-muted-foreground">Valor</th>
-                <th className="text-left pb-4 text-muted-foreground">Status</th>
-                <th className="text-left pb-4 text-muted-foreground">Vencimento</th>
-                <th className="text-right pb-4 text-muted-foreground">Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredCharges.map((charge) => (
-                <tr key={charge.id} className="border-b border-border last:border-0 hover:bg-accent/50 transition-colors">
-                  <td className="py-4">{charge.client}</td>
-                  <td className="py-4 text-muted-foreground">{charge.description}</td>
-                  <td className="py-4">{charge.value}</td>
-                  <td className="py-4">{getStatusBadge(charge.status)}</td>
-                  <td className="py-4 text-muted-foreground">{charge.dueDate}</td>
-                  <td className="py-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="rounded-xl"
-                        title="Ver detalhes"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="rounded-xl text-[#22c55e] hover:text-[#22c55e] hover:bg-[#22c55e]/10"
-                        title="Enviar via WhatsApp"
-                        onClick={() => handleSendWhatsApp(charge.client)}
-                      >
-                        <Send className="w-4 h-4" />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="rounded-xl"
-                        title="Baixar recibo"
-                      >
-                        <Download className="w-4 h-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="rounded-xl">
-                        <MoreVertical className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {filteredCharges.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Nenhuma cobrança encontrada</p>
-            </div>
-          )}
-        </div>
-
+        <ChargesTable
+          charges={filteredCharges}
+          getStatusBadge={getStatusBadge}
+          onView={(charge) => { setSelectedCharge(charge); setShowDetailsDialog(true); }}
+          onSendWhatsApp={(client, charge) => handleSendWhatsApp(client, charge)}
+        />
         {/* Mobile Cards */}
         <div className="md:hidden space-y-4">
           {filteredCharges.map((charge) => (
-            <Card key={charge.id} className="p-4 rounded-xl border-border">
-              <div className="space-y-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h4 className="font-semibold mb-1">{charge.client}</h4>
-                    <p className="text-sm text-muted-foreground">{charge.description}</p>
-                  </div>
-                  {getStatusBadge(charge.status)}
-                </div>
-
-                <div className="flex items-center justify-between pt-2 border-t border-border">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Valor</p>
-                    <p className="font-semibold">{charge.value}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-muted-foreground">Vencimento</p>
-                    <p className="text-sm">{charge.dueDate}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 pt-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="flex-1 rounded-xl gap-2"
-                  >
-                    <Eye className="w-4 h-4" />
-                    Ver
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="flex-1 rounded-xl gap-2 text-[#22c55e] hover:text-[#22c55e] hover:bg-[#22c55e]/10"
-                    onClick={() => handleSendWhatsApp(charge.client)}
-                  >
-                    <Send className="w-4 h-4" />
-                    Enviar
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
-                    className="rounded-xl"
-                  >
-                    <Download className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </Card>
+            <ChargeCard
+              key={charge.id}
+              charge={charge}
+              getStatusBadge={getStatusBadge}
+              onView={(charge) => { setSelectedCharge(charge); setShowDetailsDialog(true); }}
+              onSendWhatsApp={(client) => handleSendWhatsApp(client, charge)}
+            />
           ))}
-
           {filteredCharges.length === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">Nenhuma cobrança encontrada</p>
             </div>
           )}
         </div>
+        <ChargeDetailsDialog
+          open={showDetailsDialog}
+          onOpenChange={setShowDetailsDialog}
+          charge={selectedCharge}
+          getStatusBadge={getStatusBadge}
+        />
       </Card>
 
       {/* Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card className="p-6 rounded-2xl border-border">
-          <p className="text-muted-foreground mb-2">Total em Aberto</p>
-          <h3 className="text-[#facc15]">R$ 29.800,00</h3>
-        </Card>
-        <Card className="p-6 rounded-2xl border-border">
-          <p className="text-muted-foreground mb-2">Total Recebido</p>
-          <h3 className="text-[#22c55e]">R$ 50.100,00</h3>
-        </Card>
-        <Card className="p-6 rounded-2xl border-border">
-          <p className="text-muted-foreground mb-2">Total Vencido</p>
-          <h3 className="text-[#ef4444]">R$ 17.000,00</h3>
-        </Card>
-      </div>
+      <ChargesSummary
+        totalAberto="R$ 29.800,00"
+        totalRecebido="R$ 50.100,00"
+        totalVencido="R$ 17.000,00"
+      />
     </div>
   );
 }

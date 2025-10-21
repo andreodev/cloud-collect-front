@@ -88,7 +88,7 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl mb-4">
             <Building2 className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-primary mb-2">Cobra Fácil Cloud</h1>
+          <h1 className="text-primary mb-2">Cloud Collect</h1>
           <p className="text-muted-foreground">
             Gestão financeira inteligente para seu negócio
           </p>

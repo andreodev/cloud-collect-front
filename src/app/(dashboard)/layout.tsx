@@ -26,7 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
-import logoCloud from "@/assets/logo2.png";
+import logoCloud from "@/assets/logo3.png";
 
 export default function DashboardLayout({
   children,
@@ -46,7 +46,6 @@ export default function DashboardLayout({
   ];
 
   const handleLogout = () => {
-    // Limpar sessão/cookies aqui
     router.push("/login");
   };
 
@@ -58,14 +57,12 @@ export default function DashboardLayout({
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
-      {/* Sidebar Overlay for mobile */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
-      {/* Sidebar */}
       <aside
         className={`fixed z-50 top-0 left-0 h-full bg-card border-r border-border flex flex-col overflow-hidden transition-all duration-300
         ${sidebarOpen ? 'w-64' : 'w-0'}
@@ -76,8 +73,8 @@ export default function DashboardLayout({
           <Image
             alt="logo cloud collect"
             src={logoCloud}
-            width={80}
-            height={80}
+            width={150}
+            height={150}
           />
         </div>
         <nav className="flex-1 p-4">
