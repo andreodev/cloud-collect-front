@@ -34,7 +34,7 @@ export function AIWidget() {
   ];
 
   return (
-    <aside className="w-80 bg-card border-l border-border p-6 overflow-auto">
+    <aside className="w-full lg:w-80 bg-card lg:border-l border-border p-6 overflow-auto rounded-2xl lg:rounded-none">
       <div className="flex items-center gap-2 mb-6">
         <Sparkles className="w-5 h-5 text-primary" />
         <h3>Insights de IA</h3>

@@ -129,7 +129,7 @@ export function CashFlow() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="mb-1">Fluxo de Caixa</h2>
           <p className="text-muted-foreground">
@@ -137,8 +137,8 @@ export function CashFlow() {
           </p>
         </div>
 
-        <Tabs value={period} onValueChange={setPeriod}>
-          <TabsList className="rounded-xl">
+        <Tabs value={period} onValueChange={setPeriod} className="w-full sm:w-auto">
+          <TabsList className="rounded-xl w-full sm:w-auto grid grid-cols-3">
             <TabsTrigger value="week">Semana</TabsTrigger>
             <TabsTrigger value="month">Mês</TabsTrigger>
             <TabsTrigger value="quarter">Trimestre</TabsTrigger>
@@ -147,7 +147,7 @@ export function CashFlow() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <Card className="p-6 rounded-2xl border-border">
           <div className="flex items-start justify-between mb-4">
             <div>
@@ -198,7 +198,7 @@ export function CashFlow() {
       </div>
 
       {/* Chart */}
-      <Card className="p-6 rounded-2xl border-border">
+      <Card className="p-4 sm:p-6 rounded-2xl border-border">
         <div className="mb-6">
           <h3 className="mb-1">Comparativo Entradas x Saídas</h3>
           <p className="text-muted-foreground text-sm">
@@ -206,41 +206,45 @@ export function CashFlow() {
           </p>
         </div>
 
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={getData()}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis dataKey="name" stroke="#6b7280" />
-            <YAxis stroke="#6b7280" />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#ffffff",
-                border: "1px solid #e5e7eb",
-                borderRadius: "12px",
-              }}
-            />
-            <Legend />
-            <Bar dataKey="entradas" fill="#22c55e" radius={[8, 8, 0, 0]} name="Entradas" />
-            <Bar dataKey="saidas" fill="#ef4444" radius={[8, 8, 0, 0]} name="Saídas" />
-          </BarChart>
-        </ResponsiveContainer>
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <div className="min-w-[500px] px-4 sm:px-0">
+            <ResponsiveContainer width="100%" height={300} className="sm:h-[400px]">
+              <BarChart data={getData()}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="name" stroke="#6b7280" />
+                <YAxis stroke="#6b7280" />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#ffffff",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "12px",
+                  }}
+                />
+                <Legend />
+                <Bar dataKey="entradas" fill="#22c55e" radius={[8, 8, 0, 0]} name="Entradas" />
+                <Bar dataKey="saidas" fill="#ef4444" radius={[8, 8, 0, 0]} name="Saídas" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </Card>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Categories */}
-        <Card className="p-6 rounded-2xl border-border">
+        <Card className="p-4 sm:p-6 rounded-2xl border-border">
           <h3 className="mb-6">Por Categoria</h3>
           <div className="space-y-4">
             {categories.map((category) => (
               <div key={category.name} className="space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-3 h-3 rounded-full"
+                      className="w-3 h-3 rounded-full flex-shrink-0"
                       style={{ backgroundColor: category.color }}
                     ></div>
-                    <span>{category.name}</span>
+                    <span className="text-sm sm:text-base">{category.name}</span>
                   </div>
-                  <div className="flex gap-6 text-sm">
+                  <div className="flex gap-4 sm:gap-6 text-xs sm:text-sm ml-6 sm:ml-0">
                     {category.entradas > 0 && (
                       <span className="text-[#22c55e]">
                         +R$ {category.entradas.toLocaleString("pt-BR")}
@@ -268,10 +272,10 @@ export function CashFlow() {
         </Card>
 
         {/* Recent Movements */}
-        <Card className="p-6 rounded-2xl border-border">
-          <div className="flex items-center justify-between mb-6">
+        <Card className="p-4 sm:p-6 rounded-2xl border-border">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
             <h3>Movimentações Recentes</h3>
-            <Button variant="outline" className="rounded-xl">
+            <Button variant="outline" className="rounded-xl w-full sm:w-auto">
               Ver todas
             </Button>
           </div>
@@ -287,7 +291,7 @@ export function CashFlow() {
                     movement.type === "entrada"
                       ? "bg-[#22c55e]/10 text-[#22c55e]"
                       : "bg-[#ef4444]/10 text-[#ef4444]"
-                  } p-2 rounded-xl`}
+                  } p-2 rounded-xl flex-shrink-0`}
                 >
                   {movement.type === "entrada" ? (
                     <ArrowDownRight className="w-4 h-4" />
@@ -296,21 +300,21 @@ export function CashFlow() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <p className="truncate">{movement.description}</p>
-                      <p className="text-sm text-muted-foreground">{movement.category}</p>
+                      <p className="truncate text-sm sm:text-base">{movement.description}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">{movement.category}</p>
                     </div>
-                    <div className="text-right">
+                    <div className="text-left sm:text-right flex-shrink-0">
                       <p
-                        className={
+                        className={`text-sm sm:text-base ${
                           movement.type === "entrada" ? "text-[#22c55e]" : "text-[#ef4444]"
-                        }
+                        }`}
                       >
                         {movement.type === "entrada" ? "+" : "-"}
                         {movement.value}
                       </p>
-                      <p className="text-sm text-muted-foreground">{movement.date}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">{movement.date}</p>
                     </div>
                   </div>
                 </div>

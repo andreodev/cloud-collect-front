@@ -25,6 +25,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
+import logoCloud from "@/assets/logo2.png";
 
 export default function DashboardLayout({
   children,
@@ -33,12 +35,12 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, href: "/" },
     { id: "charges", label: "Cobranças", icon: FileText, href: "/cobrancas" },
-    { id: "cashflow", label: "Fluxo de Caixa", icon: TrendingUp, href: "/cash-flow" },
+    { id: "cashflow", label: "Fluxo", icon: TrendingUp, href: "/cash-flow" },
     { id: "reports", label: "Relatórios", icon: Receipt, href: "/relatorios" },
     { id: "settings", label: "Configurações", icon: Settings, href: "/configuracoes" },
   ];
@@ -56,16 +58,28 @@ export default function DashboardLayout({
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
+      {/* Sidebar Overlay for mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
       {/* Sidebar */}
-      <aside 
-        className={`${
-          sidebarOpen ? "w-64" : "w-0"
-        } transition-all duration-300 bg-card border-r border-border flex flex-col overflow-hidden`}
+      <aside
+        className={`fixed z-50 top-0 left-0 h-full bg-card border-r border-border flex flex-col overflow-hidden transition-all duration-300
+        ${sidebarOpen ? 'w-64' : 'w-0'}
+        lg:static lg:w-64 lg:z-auto`}
+        style={{ minWidth: sidebarOpen ? 256 : 0 }}
       >
-        <div className="p-6 border-b border-border">
-          <h1 className="text-primary">Cobra Fácil Cloud</h1>
+        <div className="border-b border-border flex items-center justify-center h-20">
+          <Image
+            alt="logo cloud collect"
+            src={logoCloud}
+            width={80}
+            height={80}
+          />
         </div>
-        
         <nav className="flex-1 p-4">
           {menuItems.map((item) => {
             const Icon = item.icon;
@@ -78,6 +92,7 @@ export default function DashboardLayout({
                     ? "bg-primary text-primary-foreground"
                     : "text-foreground hover:bg-accent"
                 }`}
+                onClick={() => setSidebarOpen(false)}
               >
                 <Icon className="w-5 h-5" />
                 <span>{item.label}</span>
@@ -85,34 +100,19 @@ export default function DashboardLayout({
             );
           })}
         </nav>
-
-        <div className="p-4 border-t border-border">
-          <div className="flex items-center gap-3 px-4 py-3">
-            <Avatar className="h-10 w-10">
-              <AvatarFallback className="bg-primary text-primary-foreground">JD</AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <p className="truncate">João Silva</p>
-              <p className="text-muted-foreground text-sm truncate">Plano Pro</p>
-            </div>
-          </div>
-        </div>
       </aside>
-
-      {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Bar */}
-        <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6">
+        <header className="h-16 bg-card border-b border-border flex items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="rounded-xl"
+              className="rounded-xl block lg:hidden"
             >
               {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
-            <h2>
+            <h2 className="text-base sm:text-lg font-semibold">
               {menuItems.find(item => isActive(item.href))?.label || "Dashboard"}
             </h2>
           </div>
@@ -127,9 +127,9 @@ export default function DashboardLayout({
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="gap-2 rounded-xl">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-primary text-primary-foreground">JD</AvatarFallback>
+                    <AvatarFallback className="bg-primary text-primary-foreground">AH</AvatarFallback>
                   </Avatar>
-                  <span>João Silva</span>
+                  <span className="hidden sm:inline">Andreo Henrique</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
@@ -159,10 +159,9 @@ export default function DashboardLayout({
 
         {/* Page Content with AI Widget */}
         <div className="flex-1 flex overflow-hidden">
-          <main className="flex-1 overflow-auto p-6">
+          <main className="flex-1 overflow-auto p-3 sm:p-6">
             {children}
           </main>
-
         </div>
       </div>
     </div>

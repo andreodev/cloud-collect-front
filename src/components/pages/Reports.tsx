@@ -96,7 +96,7 @@ export function Reports() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="mb-1">Relatórios e Recibos</h2>
           <p className="text-muted-foreground">
@@ -104,10 +104,10 @@ export function Reports() {
           </p>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <Button
             variant="outline"
-            className="gap-2 rounded-xl"
+            className="gap-2 rounded-xl w-full sm:w-auto"
             onClick={() => handleExport("pdf")}
           >
             <FileText className="w-4 h-4" />
@@ -115,7 +115,7 @@ export function Reports() {
           </Button>
           <Button
             variant="outline"
-            className="gap-2 rounded-xl"
+            className="gap-2 rounded-xl w-full sm:w-auto"
             onClick={() => handleExport("excel")}
           >
             <Download className="w-4 h-4" />
@@ -125,13 +125,13 @@ export function Reports() {
       </div>
 
       {/* Filters */}
-      <Card className="p-6 rounded-2xl border-border">
+      <Card className="p-4 sm:p-6 rounded-2xl border-border">
         <div className="flex items-center gap-2 mb-4">
           <Filter className="w-5 h-5 text-muted-foreground" />
           <h4>Filtros</h4>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <Label htmlFor="filter-client">Cliente</Label>
             <Select value={filterClient} onValueChange={setFilterClient}>
@@ -183,10 +183,11 @@ export function Reports() {
       </Card>
 
       {/* Reports List */}
-      <Card className="p-6 rounded-2xl border-border">
+      <Card className="p-4 sm:p-6 rounded-2xl border-border">
         <h3 className="mb-6">Relatórios Gerados</h3>
 
-        <div className="overflow-x-auto">
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-border">
@@ -241,12 +242,69 @@ export function Reports() {
             </tbody>
           </table>
         </div>
+
+        {/* Mobile Cards */}
+        <div className="md:hidden space-y-4">
+          {reports.map((report) => (
+            <Card key={report.id} className="p-4 rounded-xl border-border">
+              <div className="space-y-3">
+                <div>
+                  <h4 className="font-semibold mb-1">{report.type}</h4>
+                  <p className="text-sm text-muted-foreground">{report.period}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-border text-sm">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Cliente</p>
+                    <p className="truncate">{report.client}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Categoria</p>
+                    <p>{report.category}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-xs text-muted-foreground">Data</p>
+                    <p>{report.date}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 rounded-xl gap-2"
+                  >
+                    <Eye className="w-4 h-4" />
+                    Ver
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 rounded-xl gap-2"
+                    onClick={() => handleDownload(report.type)}
+                  >
+                    <Download className="w-4 h-4" />
+                    Baixar
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rounded-xl text-[#22c55e] hover:text-[#22c55e] hover:bg-[#22c55e]/10"
+                    onClick={() => handleSendWhatsApp(report.type)}
+                  >
+                    <Send className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
       </Card>
 
       {/* Receipt Templates */}
       <div>
         <h3 className="mb-4">Modelos de Recibo</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {receiptTemplates.map((template) => (
             <Card key={template.id} className="overflow-hidden rounded-2xl border-border hover:shadow-lg transition-shadow">
               <div className="aspect-[4/3] bg-accent flex items-center justify-center">
@@ -272,11 +330,11 @@ export function Reports() {
       </div>
 
       {/* WhatsApp Message Preview */}
-      <Card className="p-6 rounded-2xl border-border bg-[#22c55e]/5">
+      <Card className="p-4 sm:p-6 rounded-2xl border-border bg-[#22c55e]/5">
         <h3 className="mb-4">Prévia de Mensagem WhatsApp</h3>
         
-        <div className="space-y-4">
-          <div className="bg-card p-4 rounded-2xl border border-border max-w-md">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="bg-card p-4 rounded-2xl border border-border">
             <p className="mb-2">📄 <strong>Cobrança Pendente</strong></p>
             <p className="text-sm text-muted-foreground mb-3">
               Olá! Este é um lembrete sobre sua fatura no valor de <strong>R$ 5.500,00</strong> com vencimento em <strong>25/10/2025</strong>.
@@ -292,7 +350,7 @@ export function Reports() {
             </p>
           </div>
 
-          <div className="bg-card p-4 rounded-2xl border border-border max-w-md">
+          <div className="bg-card p-4 rounded-2xl border border-border">
             <p className="mb-2">✅ <strong>Confirmação de Pagamento</strong></p>
             <p className="text-sm text-muted-foreground mb-3">
               Pagamento confirmado! Recebemos sua transferência de <strong>R$ 5.500,00</strong> em <strong>20/10/2025</strong>.

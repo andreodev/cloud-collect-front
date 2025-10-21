@@ -89,7 +89,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="flex gap-6">
+    <div className="flex flex-col lg:flex-row gap-6">
       {/* Main Content */}
       <div className="flex-1 space-y-6">
         {/* AI Alert */}
@@ -101,7 +101,7 @@ export default function DashboardPage() {
         </Alert>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6">
         <KPICard
           title="Saldo Atual"
           value="R$ 84.500,00"

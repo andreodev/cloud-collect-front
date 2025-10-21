@@ -128,7 +128,7 @@ export function Charges() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="mb-1">Cobranças</h2>
           <p className="text-muted-foreground">
@@ -138,7 +138,7 @@ export function Charges() {
 
         <Dialog open={showNewChargeDialog} onOpenChange={setShowNewChargeDialog}>
           <DialogTrigger asChild>
-            <Button className="gap-2 rounded-xl shadow-lg">
+            <Button className="gap-2 rounded-xl shadow-lg w-full sm:w-auto">
               <Plus className="w-5 h-5" />
               Nova Cobrança
             </Button>
@@ -257,7 +257,8 @@ export function Charges() {
 
       {/* Charges Table */}
       <Card className="p-6 rounded-2xl border-border">
-        <div className="overflow-x-auto">
+        {/* Desktop Table */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-border">
@@ -320,10 +321,71 @@ export function Charges() {
             </div>
           )}
         </div>
+
+        {/* Mobile Cards */}
+        <div className="md:hidden space-y-4">
+          {filteredCharges.map((charge) => (
+            <Card key={charge.id} className="p-4 rounded-xl border-border">
+              <div className="space-y-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h4 className="font-semibold mb-1">{charge.client}</h4>
+                    <p className="text-sm text-muted-foreground">{charge.description}</p>
+                  </div>
+                  {getStatusBadge(charge.status)}
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-border">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Valor</p>
+                    <p className="font-semibold">{charge.value}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-muted-foreground">Vencimento</p>
+                    <p className="text-sm">{charge.dueDate}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 pt-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1 rounded-xl gap-2"
+                  >
+                    <Eye className="w-4 h-4" />
+                    Ver
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1 rounded-xl gap-2 text-[#22c55e] hover:text-[#22c55e] hover:bg-[#22c55e]/10"
+                    onClick={() => handleSendWhatsApp(charge.client)}
+                  >
+                    <Send className="w-4 h-4" />
+                    Enviar
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="rounded-xl"
+                  >
+                    <Download className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+
+          {filteredCharges.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Nenhuma cobrança encontrada</p>
+            </div>
+          )}
+        </div>
       </Card>
 
       {/* Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card className="p-6 rounded-2xl border-border">
           <p className="text-muted-foreground mb-2">Total em Aberto</p>
           <h3 className="text-[#facc15]">R$ 29.800,00</h3>

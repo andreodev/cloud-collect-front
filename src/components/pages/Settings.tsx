@@ -186,32 +186,36 @@ export function Settings() {
 
       {/* Tabs */}
       <Tabs defaultValue="whatsapp" className="w-full">
-        <TabsList className="rounded-xl mb-6">
+        <TabsList className="rounded-xl mb-6 w-full grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-0 h-auto sm:h-10">
           <TabsTrigger value="whatsapp" className="gap-2">
             <MessageSquare className="w-4 h-4" />
-            WhatsApp
+            <span className="hidden sm:inline">WhatsApp</span>
+            <span className="sm:hidden">WhatsApp</span>
           </TabsTrigger>
           <TabsTrigger value="company" className="gap-2">
             <Building2 className="w-4 h-4" />
-            Empresa
+            <span className="hidden sm:inline">Empresa</span>
+            <span className="sm:hidden">Empresa</span>
           </TabsTrigger>
           <TabsTrigger value="users" className="gap-2">
             <Users className="w-4 h-4" />
-            Usuários
+            <span className="hidden sm:inline">Usuários</span>
+            <span className="sm:hidden">Usuários</span>
           </TabsTrigger>
           <TabsTrigger value="plans" className="gap-2">
             <Crown className="w-4 h-4" />
-            Planos
+            <span className="hidden sm:inline">Planos</span>
+            <span className="sm:hidden">Planos</span>
           </TabsTrigger>
         </TabsList>
 
         {/* WhatsApp Tab */}
         <TabsContent value="whatsapp">
-          <div className="grid lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Editor Section */}
             <div className="space-y-6">
               {/* Message Editor */}
-              <Card className="p-6 rounded-2xl border-border">
+              <Card className="p-4 sm:p-6 rounded-2xl border-border">
                 <div className="flex items-center justify-between mb-4">
                   <h3>Editor de Mensagem</h3>
                   <Badge className="bg-[#25D366]/10 text-[#25D366] rounded-lg">
@@ -234,7 +238,7 @@ export function Settings() {
                     </p>
                   </div>
 
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <Button
                       onClick={saveWhatsappMessage}
                       className="flex-1 rounded-xl gap-2"
@@ -255,7 +259,7 @@ export function Settings() {
               </Card>
 
               {/* Parameters */}
-              <Card className="p-6 rounded-2xl border-border">
+              <Card className="p-4 sm:p-6 rounded-2xl border-border">
                 <h3 className="mb-4">Parâmetros Disponíveis</h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   Clique para copiar e cole no editor de mensagem
@@ -288,7 +292,7 @@ export function Settings() {
               </Card>
 
               {/* Templates */}
-              <Card className="p-6 rounded-2xl border-border">
+              <Card className="p-4 sm:p-6 rounded-2xl border-border">
                 <div className="flex items-center gap-2 mb-4">
                   <Sparkles className="w-5 h-5 text-primary" />
                   <h3>Templates Prontos</h3>
@@ -316,7 +320,7 @@ export function Settings() {
 
             {/* Preview Section */}
             <div className="space-y-6">
-              <Card className="p-6 rounded-2xl border-border sticky top-6">
+              <Card className="p-4 sm:p-6 rounded-2xl border-border lg:sticky lg:top-6">
                 <div className="flex items-center gap-2 mb-4">
                   <MessageSquare className="w-5 h-5 text-[#25D366]" />
                   <h3>Preview da Mensagem</h3>
@@ -411,11 +415,11 @@ export function Settings() {
 
         {/* Company Tab */}
         <TabsContent value="company">
-          <Card className="p-6 rounded-2xl border-border">
+          <Card className="p-4 sm:p-6 rounded-2xl border-border">
             <h3 className="mb-6">Informações da Empresa</h3>
 
             <form onSubmit={handleSaveCompany} className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="company-name">Nome da Empresa</Label>
                   <Input
@@ -435,7 +439,7 @@ export function Settings() {
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -465,7 +469,7 @@ export function Settings() {
                 />
               </div>
 
-              <div className="grid md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="city">Cidade</Label>
                   <Input
@@ -506,11 +510,11 @@ export function Settings() {
         {/* Users Tab */}
         <TabsContent value="users">
           <div className="space-y-6">
-            <Card className="p-6 rounded-2xl border-border">
+            <Card className="p-4 sm:p-6 rounded-2xl border-border">
               <h3 className="mb-6">Convidar Novo Usuário</h3>
 
               <form onSubmit={handleInviteUser} className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="user-name">Nome</Label>
                     <Input
@@ -542,10 +546,11 @@ export function Settings() {
               </form>
             </Card>
 
-            <Card className="p-6 rounded-2xl border-border">
+            <Card className="p-4 sm:p-6 rounded-2xl border-border">
               <h3 className="mb-6">Usuários Ativos</h3>
 
-              <div className="overflow-x-auto">
+              {/* Desktop Table */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border">
@@ -588,6 +593,45 @@ export function Settings() {
                   </tbody>
                 </table>
               </div>
+
+              {/* Mobile Cards */}
+              <div className="md:hidden space-y-4">
+                {users.map((user) => (
+                  <Card key={user.id} className="p-4 rounded-xl border-border">
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold mb-1">{user.name}</h4>
+                          <p className="text-sm text-muted-foreground truncate">{user.email}</p>
+                        </div>
+                        <Badge
+                          className={`rounded-lg ml-2 flex-shrink-0 ${user.status === "active"
+                              ? "bg-[#22c55e]/10 text-[#22c55e]"
+                              : "bg-[#facc15]/10 text-[#facc15]"
+                            }`}
+                        >
+                          {user.status === "active" ? "Ativo" : "Pendente"}
+                        </Badge>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2 border-t border-border">
+                        <div>
+                          <p className="text-xs text-muted-foreground">Função</p>
+                          <p className="text-sm">{user.role}</p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="rounded-xl text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Remover
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
             </Card>
           </div>
         </TabsContent>
@@ -595,8 +639,8 @@ export function Settings() {
         {/* Plans Tab */}
         <TabsContent value="plans">
           <div className="space-y-6">
-            <Card className="p-6 rounded-2xl border-primary bg-primary/5">
-              <div className="flex items-center gap-3">
+            <Card className="p-4 sm:p-6 rounded-2xl border-primary bg-primary/5">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                 <div className="bg-primary text-primary-foreground p-3 rounded-2xl">
                   <Crown className="w-6 h-6" />
                 </div>
@@ -606,14 +650,14 @@ export function Settings() {
                     Você está aproveitando todos os recursos do plano Pro
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="text-left sm:text-right w-full sm:w-auto">
                   <p className="text-muted-foreground text-sm">Próxima cobrança</p>
                   <p>20/11/2025</p>
                 </div>
               </div>
             </Card>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {plans.map((plan) => (
                 <Card
                   key={plan.id}
@@ -671,11 +715,12 @@ export function Settings() {
               ))}
             </div>
 
-            <Card className="p-6 rounded-2xl border-border">
+            <Card className="p-4 sm:p-6 rounded-2xl border-border">
               <h3 className="mb-4">Comparativo de Planos</h3>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+              <div className="overflow-x-auto -mx-4 sm:mx-0">
+                <div className="min-w-[600px] px-4 sm:px-0">
+                  <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-border">
                       <th className="text-left pb-3 text-muted-foreground">Recurso</th>
@@ -723,6 +768,7 @@ export function Settings() {
                     </tr>
                   </tbody>
                 </table>
+                </div>
               </div>
             </Card>
           </div>
